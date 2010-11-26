@@ -125,6 +125,7 @@ public class invoice extends Activity
 		if (month.equals("1"))
 		{
 			int myear = Integer.valueOf(year) - 1;
+			
 			s_d = myear + "/" + "11";
 			e_d = myear + "/" + "12";
 		}
@@ -132,6 +133,7 @@ public class invoice extends Activity
 		{
 			int smonth = Integer.valueOf(month) - 2;
 			int emonth = Integer.valueOf(month) - 1;
+			
 			s_d = year + "/" + Integer.toString(smonth);
 			e_d = year + "/" + Integer.toString(emonth);
 		}
