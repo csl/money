@@ -32,6 +32,16 @@ public class MoneyListView extends ListActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+	   	try{
+    		dbHelper = new SQLiteHelper(this, DB_NAME, null, DB_VERSION);
+    		db = dbHelper.getWritableDatabase();
+    	}
+		catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}
 		
 		message = (TextView) findViewById(R.id.message);
 
@@ -166,14 +176,15 @@ public class MoneyListView extends ListActivity
 	
     private void updateShow() 
     {
-    	memo_info = (String) this.getResources().getText(R.string.memo_title);
+    	memo_info = (String) this.getResources().getText(R.string.memo_title) + "\n";
+    	
 		//get memo information
     	try{
         	cursor = db.query(SQLiteHelper.TB_NAME_M, null, null, null, null, null, null);
         	
         	if (cursor.isAfterLast())
         	{
-        		memo_info = memo_info + "\n" +
+        		memo_info = memo_info +
         			(String) this.getResources().getText(R.string.memo_empty);
         	}
         	
