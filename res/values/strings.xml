@@ -21,6 +21,10 @@
     <string name="t_nodata">查無此發票資料</string>
     <string name="t_nomatch">本期無中奬</string>
     <string name="t_special">特奬：</string>
+    
+    <string name="cmemo">備忘錄管理</string>
+    <string name="memo_empty">查無備忘錄</string>
+    <string name="memo_title">備忘錄：</string>
 
  	<string-array name="t_special">  
   	<item>頭奬</item>  

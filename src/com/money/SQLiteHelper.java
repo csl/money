@@ -10,6 +10,7 @@ public class SQLiteHelper extends SQLiteOpenHelper
 	public static final String TB_NAME = "money_table";
 	public static final String TB_NAME_A = "account_table";
 	public static final String TB_NAME_G = "gunno_table";
+	public static final String TB_NAME_M = "memo_table";
 
 	public SQLiteHelper(Context context, String name, CursorFactory factory,
 			int version) {
@@ -50,6 +51,14 @@ public class SQLiteHelper extends SQLiteOpenHelper
 				Gunno_item.HTWO + " varchar,"+
 				Gunno_item.HTHREE + " varchar"+
 				");");
+		
+		db.execSQL("CREATE TABLE IF NOT EXISTS " +
+				TB_NAME_M + "(" +
+				Memo_item.ID + " integer primary key," +
+				Memo_item.DATE + " varchar,"+
+				Memo_item.TEXT + " varchar"+
+				");");
+
 		}
 	
 	@Override

@@ -1,22 +1,39 @@
 package com.money;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.util.Log;
 
 public class MoneyListView extends ListActivity 
 {
+	private static String DB_NAME = "money.db";
+	private static int DB_VERSION = 1;
+	private static final int EDIT=1;
+	
+	private SQLiteDatabase db;
+	private SQLiteHelper dbHelper;
+	private Cursor cursor;
+	private String memo_info="";
+	private TextView message;
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		message = (TextView) findViewById(R.id.message);
 
 		String m_list  = (String) this.getResources().getText(R.string.m_list);
 		String m_account  = (String) this.getResources().getText(R.string.m_account);
@@ -31,7 +48,9 @@ public class MoneyListView extends ListActivity
 		
 		String s_list  = (String) this.getResources().getText(R.string.s_list);
 		String s_setup  = (String) this.getResources().getText(R.string.s_setup);
-		
+
+		String cmemo  = (String) this.getResources().getText(R.string.cmemo);
+
 		CustomerListAdapter adapter = new CustomerListAdapter(this);
 		ContentListElement element;
 
@@ -70,10 +89,16 @@ public class MoneyListView extends ListActivity
 
 		elements = new ArrayList<ListElement>();
 
+		//gunno 
 		element = new ContentListElement();
 		element.setTitle(t_gunno);
 		elements.add(element);
 
+		//memo
+		element = new ContentListElement();
+		element.setTitle(cmemo);
+		elements.add(element);
+		
 		adapter.addList(elements);
 
 		//system setup
@@ -87,6 +112,9 @@ public class MoneyListView extends ListActivity
 		adapter.addList(elements);
 
 		this.setListAdapter(adapter);
+		
+		updateShow();
+		message.setText(memo_info);
 
 	}
 	
@@ -126,5 +154,40 @@ public class MoneyListView extends ListActivity
 			startActivity(intent);
 			MoneyListView.this.finish();
 		}
+		else if (position == 7)
+		{
+			Intent intent = new Intent();
+			intent.setClass(MoneyListView.this,addmemo.class);
+	
+			startActivity(intent);
+			MoneyListView.this.finish();
+		}
 	}
+	
+    private void updateShow() 
+    {
+    	memo_info = (String) this.getResources().getText(R.string.memo_title);
+		//get memo information
+    	try{
+        	cursor = db.query(SQLiteHelper.TB_NAME_M, null, null, null, null, null, null);
+        	
+        	if (cursor.isAfterLast())
+        	{
+        		memo_info = memo_info + "\n" +
+        			(String) this.getResources().getText(R.string.memo_empty);
+        	}
+        	
+        	cursor.moveToFirst();
+        	while(!cursor.isAfterLast())
+        	{
+        		memo_info = memo_info + cursor.getString(1) + " " + cursor.getString(2) + "\n";
+        		cursor.moveToNext();
+        	}
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}
+    	
+    }
 }
