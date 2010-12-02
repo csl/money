@@ -18,6 +18,8 @@
     <string name="t_list">工具</string>
     <string name="t_budget">預算管理</string>    
     <string name="budget_null">不可為空</string>    
+    <string name="budget_notnumber">必須為數字</string>    
+    <string name="budget_total">總預算</string>    
     <string name="t_gunno">統一發票</string>
     <string name="t_gunno_m">發票管理</string>
     <string name="t_nodata">查無此發票資料</string>

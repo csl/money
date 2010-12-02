@@ -59,6 +59,8 @@ public class SetBudget extends Activity
 	
 	private int nodata;
 	private String null_b;
+	private String notnumber;
+	private String budget_b;
 
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -69,6 +71,8 @@ public class SetBudget extends Activity
 	    nodata = 0;
 
 	    null_b = (String) this.getResources().getText(R.string.budget_null);
+	    budget_b = (String) this.getResources().getText(R.string.budget_total);
+	    notnumber= (String) this.getResources().getText(R.string.budget_notnumber);
 	    
     	try{
     		dbHelper = new SQLiteHelper(this, DB_NAME, null, DB_VERSION);
@@ -124,6 +128,7 @@ public class SetBudget extends Activity
 	     {
 	        	public void onClick(View v)
 	        	{
+	        		int total_m = 0;
 	        		String mdata = "";
 	        		String myear = syear.getSelectedItem().toString().trim();
 					int type = stype.getSelectedItemPosition();
@@ -136,6 +141,14 @@ public class SetBudget extends Activity
 	    		    		openOptionsDialog(null_b);
 	    		    		return;
 	    		    	}
+	    		    	
+	    		    	try {
+	    		    			total_m = total_m + Integer.parseInt(etext[i].getText().toString());
+	    		    		} 
+	    		    	catch(Exception e) {
+		    		    		openOptionsDialog(notnumber);
+		    		    		return;
+	    		    		}
 	    		    	
 	    		    	if (i==0)
 	    		    	{
@@ -181,6 +194,7 @@ public class SetBudget extends Activity
 				    	}
 						Toast.makeText(SetBudget.this, "save success.", Toast.LENGTH_LONG).show();
 		        	}
+		    	    vmoney.setText(budget_b + total_m);
 	        	}
 	      }
 	    );
@@ -215,6 +229,7 @@ public class SetBudget extends Activity
 		//Query exist or not
 		String myear = syear.getSelectedItem().toString().trim();
 		String classify_list[] = this.getResources().getStringArray(R.array.classify_list);
+		int total_m = 0;
 	
 		int type = stype.getSelectedItemPosition();		
 		if (type == 0)
@@ -260,6 +275,7 @@ public class SetBudget extends Activity
     		for(String name:names)
     		{
     			data_i[i] = name;
+    	    	total_m = total_m + Integer.parseInt(data_i[i]);
     			i++;
     		}    		
     	}
@@ -312,6 +328,7 @@ public class SetBudget extends Activity
 		    	mylayout.addView(etext[i]);
 		     }
 		}
+	    vmoney.setText((String) this.getResources().getText(R.string.budget_total) + total_m);
 	}
 	
     //error message
