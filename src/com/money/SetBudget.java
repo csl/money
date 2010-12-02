@@ -55,13 +55,21 @@ public class SetBudget extends Activity
 	private LinearLayout mylayout;
 	private TextView tview[];
 	private EditText etext[];
-	int edittextlen;
+	private int edittextlen;
+	
+	private int nodata;
+	private String null_b;
 
 	public void onCreate(Bundle savedInstanceState)
 	{
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.budget);
 	 
+	    //Initial data
+	    nodata = 0;
+
+	    null_b = (String) this.getResources().getText(R.string.budget_null);
+	    
     	try{
     		dbHelper = new SQLiteHelper(this, DB_NAME, null, DB_VERSION);
     		db = dbHelper.getWritableDatabase();
@@ -74,7 +82,7 @@ public class SetBudget extends Activity
 		
 		stype = (Spinner) findViewById(R.id.stype);
 		syear = (Spinner) findViewById(R.id.syear);
-		vmoney = (TextView) findViewById(R.id.money);
+		vmoney = (TextView) findViewById(R.id.allbudget);
 		mylayout = (LinearLayout)findViewById(R.id.mylayout);
 
 		//add date_year spinner
@@ -82,7 +90,6 @@ public class SetBudget extends Activity
 		ArrayAdapter<String> type_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, type_list);
 		type_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		stype.setAdapter(type_adapter);
-		
 		
 		stype.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
 	           public void onItemSelected(AdapterView adapterView, View view, int position, long id)
@@ -94,12 +101,20 @@ public class SetBudget extends Activity
 	           }
 	        });
 		
-		
 		//add date_year spinner
 		String date_year_list[] = this.getResources().getStringArray(R.array.year_list);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, date_year_list);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		syear.setAdapter(adapter);
+		syear.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
+	           public void onItemSelected(AdapterView adapterView, View view, int position, long id)
+	           {
+	        	   update_layout(stype.getSelectedItemPosition());
+	           }
+	           public void onNothingSelected(AdapterView arg0) 
+	           {
+	           }
+	        });
 		
 		syear.setSelection(1);
 		
@@ -109,28 +124,66 @@ public class SetBudget extends Activity
 	     {
 	        	public void onClick(View v)
 	        	{
-	        		/*
+	        		String mdata = "";
+	        		String myear = syear.getSelectedItem().toString().trim();
+					int type = stype.getSelectedItemPosition();
+	        		
+	        		//fetch EditText data
+	    		    for(int i=0; i<edittextlen; i++)
+	    		     {
+	    		    	if (etext[i].getText().toString().equals("")) 
+	    		    	{
+	    		    		openOptionsDialog(null_b);
+	    		    		return;
+	    		    	}
+	    		    	
+	    		    	if (i==0)
+	    		    	{
+	    		    		mdata = mdata + etext[i].getText();
+	    		    	}
+	    		    	else
+	    		    	{
+	    		    		mdata = mdata + "," + etext[i].getText();
+	    		    	}
+	    		     }
+	    		    
 	        		//fetch data
 					ContentValues values = new ContentValues();
-					values.put(Memo_item.DATE, date_d.getText().toString().trim());
-					values.put(Memo_item.TEXT, text.getText().toString().trim());
-					
-					//SQL
-					
-			    	try{
-						Long cityID = db.insert(SQLiteHelper.TB_NAME_M, Memo_item.ID, values);
-			    	}
-					catch(IllegalArgumentException e){
-			    		e.printStackTrace();
-			    		++ DB_VERSION;
-			    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
-			    	}
-					Toast.makeText(SetBudget.this, "add success.", Toast.LENGTH_LONG).show();
-					updateShow();*/
+					values.put(Budget_item.YEAR , myear);
+					values.put(Budget_item.TYPE, Integer.toString(type));
+					values.put(Budget_item.DATA, mdata);
+					if (nodata == 1)
+					{
+						//SQL
+				    	try{
+							Long cityID = db.insert(SQLiteHelper.TB_NAME_B, Budget_item.ID, values);
+				    	}
+						catch(IllegalArgumentException e){
+				    		e.printStackTrace();
+				    		++ DB_VERSION;
+				    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+				    	}
+						nodata=0;
+						Toast.makeText(SetBudget.this, "save success.", Toast.LENGTH_LONG).show();
+					}
+					else
+					{
+       				 String where = Budget_item.YEAR + "='" + myear + "' and " + Budget_item.TYPE + "='" + type + "'";
+
+						//SQL
+				    	try{
+    						int cityID = db.update(SQLiteHelper.TB_NAME_B, values, where, null);
+				    	}
+						catch(IllegalArgumentException e){
+				    		e.printStackTrace();
+				    		++ DB_VERSION;
+				    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+				    	}
+						Toast.makeText(SetBudget.this, "save success.", Toast.LENGTH_LONG).show();
+		        	}
 	        	}
 	      }
 	    );
-		
 
 		//exit button
 	    Button exit_b=(Button) findViewById(R.id.exit_b);
@@ -154,18 +207,83 @@ public class SetBudget extends Activity
 	
 	private void update_layout(int position)
 	{
-		//openOptionsDialog(Integer.toString(position));
+		nodata=0;
 		
+		//clear all views
+		mylayout.removeAllViews();
+
+		//Query exist or not
+		String myear = syear.getSelectedItem().toString().trim();
+		String classify_list[] = this.getResources().getStringArray(R.array.classify_list);
+	
+		int type = stype.getSelectedItemPosition();		
+		if (type == 0)
+		{
+			edittextlen = classify_list.length;
+		}
+		else
+		{
+			edittextlen=12;			
+		}
+
+		String data_i[] = new String[edittextlen];
+		String mydata = null;
+
+		//query exist
+    	try{
+    		cursor = db.query(SQLiteHelper.TB_NAME_B, null, 
+    				Budget_item.YEAR + "='" + myear + "' and " + Budget_item.TYPE + "='" + type + "'", null, null, null, null);
+    		cursor.moveToFirst();
+    		
+    		//no data
+    		if (cursor.isAfterLast())
+    		{
+    			nodata=1;
+    		}
+    		
+        	while(!cursor.isAfterLast())
+        	{    
+        		mydata = cursor.getString(3);
+        		cursor.moveToNext();
+        	}
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}
+    	
+    	//Split
+    	if (mydata != null)
+    	{
+    		String[] names = mydata.split(",");
+    		int i = 0;
+    		for(String name:names)
+    		{
+    			data_i[i] = name;
+    			i++;
+    		}    		
+    	}
+		
+		//openOptionsDialog(Integer.toString(position));
 		if (position == 0)
 		{
-		    tview= new TextView[12];
-			etext = new EditText[12];
-		    for(int i=0;i<12;i++)
+		    tview= new TextView[edittextlen];
+			etext = new EditText[edittextlen];
+		    for(int i=0; i<edittextlen; i++)
 		    {
 		    	tview[i] = new TextView(this);
-		    	tview[i].setText(Integer.toString(i+1));
+		    	tview[i].setText(classify_list[i]);
 		    	etext[i] = new EditText(this);
-		    	etext[i].setText("0");
+
+		    	if (nodata == 1)
+		    	{
+		    		etext[i].setText("0");
+		    	}
+		    	else
+		    	{
+		    		etext[i].setText(data_i[i]);
+		    	}
+		    	
 		    	mylayout.addView(tview[i]);
 		    	mylayout.addView(etext[i]);
 		     }
@@ -180,18 +298,27 @@ public class SetBudget extends Activity
 		    	tview[i] = new TextView(this);
 		    	tview[i].setText(Integer.toString(i+1));
 		    	etext[i] = new EditText(this);
-		    	etext[i].setText("0");
+
+		    	if (nodata == 1)
+		    	{
+		    		etext[i].setText("0");
+		    	}
+		    	else
+		    	{
+		    		etext[i].setText(data_i[i]);
+		    	}
+		    	
 		    	mylayout.addView(tview[i]);
 		    	mylayout.addView(etext[i]);
 		     }
 		}
 	}
-            
+	
     //error message
     private void openOptionsDialog(String info)
 	{
 	    new AlertDialog.Builder(this)
-	    .setTitle("Inquire")
+	    .setTitle("message")
 	    .setMessage(info)
 	    .setPositiveButton("OK",
 	        new DialogInterface.OnClickListener()

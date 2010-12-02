@@ -9,6 +9,7 @@ public class SQLiteHelper extends SQLiteOpenHelper
 {
 	public static final String TB_NAME = "money_table";
 	public static final String TB_NAME_A = "account_table";
+	public static final String TB_NAME_B = "budget_table";
 	public static final String TB_NAME_G = "gunno_table";
 	public static final String TB_NAME_M = "memo_table";
 
@@ -38,6 +39,14 @@ public class SQLiteHelper extends SQLiteOpenHelper
 				Account_item.CLASSIFY + " varchar,"+
 				Account_item.MONEY + " varchar,"+
 				Account_item.COMMIT + " varchar"+
+				");");
+
+		db.execSQL("CREATE TABLE IF NOT EXISTS " +
+				TB_NAME_B + "(" +
+				Budget_item.ID + " integer primary key," +
+				Budget_item.YEAR + " varchar,"+
+				Budget_item.TYPE + " varchar,"+
+				Budget_item.DATA + " varchar"+
 				");");
 		
 		db.execSQL("CREATE TABLE IF NOT EXISTS " +
