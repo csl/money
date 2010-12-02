@@ -16,6 +16,7 @@
     <string name="c_inoutcome">查詢帳務</string>
     
     <string name="t_list">工具</string>
+    <string name="t_budget">預算管理</string>    
     <string name="t_gunno">統一發票</string>
     <string name="t_gunno_m">發票管理</string>
     <string name="t_nodata">查無此發票資料</string>
@@ -26,7 +27,7 @@
     <string name="memo_empty">查無備忘錄</string>
     <string name="memo_title">備忘錄：</string>
 
- 	<string-array name="t_special">  
+	<string-array name="t_special">  
   	<item>頭奬</item>  
   	<item>貳獎</item>  
   	<item>參獎</item>  
@@ -77,5 +78,12 @@
   	<item>07</item>  
   	<item>09</item>  
   	<item>11</item>  
+ 	</string-array>
+ 	
+ 	<string-array name="budget_type">  
+  	<item>類別</item>  
+  	<item>月</item>  
  	</string-array> 
+
+  
 </resources>

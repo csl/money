@@ -18,5 +18,6 @@
      <activity android:name="calc"></activity>>        
      <activity android:name="addgunno"></activity>>        
      <activity android:name="addmemo"></activity>>        
+     <activity android:name="SetBudget"></activity>>        
     </application>
 </manifest> 

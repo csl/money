@@ -60,6 +60,7 @@ public class MoneyListView extends ListActivity
 		String s_setup  = (String) this.getResources().getText(R.string.s_setup);
 
 		String cmemo  = (String) this.getResources().getText(R.string.cmemo);
+		String t_budget  = (String) this.getResources().getText(R.string.t_budget);
 
 		CustomerListAdapter adapter = new CustomerListAdapter(this);
 		ContentListElement element;
@@ -96,9 +97,13 @@ public class MoneyListView extends ListActivity
 
 		//tools
 		adapter.addSectionHeaderItem(t_list);
-
 		elements = new ArrayList<ListElement>();
 
+		//budget
+		element = new ContentListElement();
+		element.setTitle(t_budget);
+		elements.add(element);
+		
 		//gunno 
 		element = new ContentListElement();
 		element.setTitle(t_gunno);
@@ -159,12 +164,20 @@ public class MoneyListView extends ListActivity
 		else if (position == 6)
 		{
 			Intent intent = new Intent();
-			intent.setClass(MoneyListView.this,invoice.class);
+			intent.setClass(MoneyListView.this,SetBudget.class);
 	
 			startActivity(intent);
 			MoneyListView.this.finish();
 		}
 		else if (position == 7)
+		{
+			Intent intent = new Intent();
+			intent.setClass(MoneyListView.this,invoice.class);
+	
+			startActivity(intent);
+			MoneyListView.this.finish();
+		}
+		else if (position == 8)
 		{
 			Intent intent = new Intent();
 			intent.setClass(MoneyListView.this,addmemo.class);
