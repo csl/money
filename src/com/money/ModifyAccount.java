@@ -114,6 +114,7 @@ public class ModifyAccount extends Activity
 	     {
 	        	public void onClick(View v)
 	        	{
+	        		String where = Account_item.ACCOUNT + "='" + accname.getSelectedItem().toString().trim() + "'";
 	        		//upgrade
 					ContentValues values = new ContentValues();
 					//values.put(Account_item.ACCOUNT, accname.getSelectedItem().toString().trim());
@@ -125,7 +126,7 @@ public class ModifyAccount extends Activity
 					//SQL
 					
 			    	try{
-						//int AccountID = db.update(SQLiteHelper.TB_NAME_A, values, where, null);
+						int AccountID = db.update(SQLiteHelper.TB_NAME_A, values, where, null);
 			    	}
 					catch(IllegalArgumentException e){
 			    		e.printStackTrace();
