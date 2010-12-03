@@ -19,5 +19,6 @@
      <activity android:name="addgunno"></activity>>        
      <activity android:name="addmemo"></activity>>        
      <activity android:name="SetBudget"></activity>>        
+     <activity android:name="ModifyAccount"></activity>>        
     </application>
 </manifest> 

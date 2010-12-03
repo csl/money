@@ -27,6 +27,7 @@ import android.content.ContentValues;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ArrayAdapter;
+import android.app.AlertDialog.Builder;
 
 public class additem extends Activity 
 {
@@ -50,6 +51,13 @@ public class additem extends Activity
     private int mYear,mMonth,mDay;
     
     private String sYear,sMonth, sDay;
+    
+    private String classify_list[];
+    private String money_message;
+    private int edittextlen;
+    private String type_m, money_m;
+
+    private AlertDialog.Builder builder;
 
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -65,6 +73,12 @@ public class additem extends Activity
     		++ DB_VERSION;
     		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
     	}
+
+		classify_list = this.getResources().getStringArray(R.array.classify_list);
+		money_message = (String) this.getResources().getText(R.string.m_message1);
+		edittextlen = classify_list.length;
+		
+		builder = new AlertDialog.Builder(this);
 		
 		ispinner = (Spinner) findViewById(R.id.ispin);
 		classify = (Spinner) findViewById(R.id.classify);
@@ -146,27 +160,152 @@ public class additem extends Activity
 	     {
 	        	public void onClick(View v)
 	        	{
-	        		//fetch data
-					ContentValues values = new ContentValues();
-					values.put(Money_item.CLASS, ispinner.getSelectedItem().toString().trim());
-					values.put(Money_item.CLASSIFY, classify.getSelectedItem().toString().trim());
-					values.put(Money_item.ITEM, subclass.getText().toString().trim());
-					values.put(Money_item.ACCOUNT, account.getSelectedItem().toString().trim());
-					values.put(Money_item.DATE, date_d.getText().toString().trim());
-					values.put(Money_item.MONEY, money.getText().toString().trim());
-					values.put(Money_item.GUNNO, gunno.getText().toString().trim());
-					
-					//SQL
-					
-			    	try{
-						Long cityID = db.insert(SQLiteHelper.TB_NAME, Money_item.ID, values);
-			    	}
-					catch(IllegalArgumentException e){
-			    		e.printStackTrace();
-			    		++ DB_VERSION;
-			    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
-			    	}
-					Toast.makeText(additem.this, "add success.", Toast.LENGTH_LONG).show();
+	        		String mydata = null;
+	        		int nodata=0;
+	        		money_m = "0";
+	        		type_m = "0";
+	        		
+	        		//splict date
+	        		String format = date_d.getText().toString();
+            		String[] names = format.split("/");
+            		int i=0;
+            		for(String name:names)
+            		{
+            			if (i ==0)
+            				sYear = name;
+            			else if (i==1)
+            				sMonth = name;
+            			else if (i==2)
+            				sDay = name;            				
+            			i++;
+            		}
+
+            		//check: sYear,sMonth
+	            	try{
+	            		cursor = db.query(SQLiteHelper.TB_NAME_B, null, 
+	            				Budget_item.YEAR + "='" + sYear + "'", null, null, null, null);
+	            		cursor.moveToFirst();
+	            		
+	            		//no data
+	            		if (cursor.isAfterLast())
+	            		{
+	            			nodata = 1;
+	            		}
+	            		
+	            		//if yes, has two data
+	                	while(!cursor.isAfterLast())
+	                	{
+	                		String type = cursor.getString(2);
+	                		if (type.equals("0"))
+	                		{
+	                			int type_id = classify.getSelectedItemPosition();
+		                		mydata = cursor.getString(3);
+	                    		names = mydata.split(",");
+	                    		i=0;
+	                    		for(String name:names)
+	                    		{
+	                    			if (i == type_id)
+	                    			{
+	                    				type_m = name;
+	                    				break;
+	                    			}
+	                    			i++;
+	                    		}
+	                		}
+	                		else
+	                		{
+	                			int month_id = Integer.parseInt(sMonth);
+		                		mydata = cursor.getString(3);
+	                    		names = mydata.split(",");
+	                    		i=0;
+	                    		for(String name:names)
+	                    		{
+	                    			if (i == month_id-1)
+	                    			{
+	                    				money_m = name;
+	                    				break;
+	                    			}
+	                    			i++;
+	                    		}	                			
+	                		}
+	                		
+	                		cursor.moveToNext();	                		
+                    	}
+	            	}catch(IllegalArgumentException e){
+	            		e.printStackTrace();
+	            		++ DB_VERSION;
+	            		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+	            	}       		
+	        		
+	            	//check
+	            	if (nodata == 0)
+	            	{
+	            		//fetch data
+	            		int budget_type = Integer.parseInt(type_m);
+	            		int budget_month = Integer.parseInt(money_m);
+
+	            		//zero int = null
+	            		int over_budget=0;
+	            		int cost = 0;
+	            		
+	            		if (budget_type == 0 && budget_month == 0)
+	            		{
+    	            		add_itemtoDB();
+	            			return;
+	            		}
+	            		
+	            		if (budget_type != 0)
+	            		{
+	            			cost = query_type_totalm();
+	            			//over budget
+	            			if (cost > budget_type) 
+	            				over_budget = 1;
+	            		}
+	            		
+	            		if (budget_month != 0)
+	            		{
+	            			cost = query_month_totalm();
+		            		openOptionsDialog(budget_month + " " + cost);
+	            			
+	            			//over budget
+	            			if (cost > budget_month) 
+	            				over_budget = 1;
+	            		}
+
+	            		
+	            		if (over_budget == 1)
+	            		{
+		                    builder.setMessage(money_message);
+		                    builder.setCancelable(false);
+		                   
+		                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		                        public void onClick(DialogInterface dialog, int id) 
+		                        {
+		    	            		add_itemtoDB();
+		                        }
+		                    });
+		                   
+		                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+		                        public void onClick(DialogInterface dialog, int id) 
+		                        {
+		                        	return;
+		                        }
+		                    });
+		                   
+		                    AlertDialog alert = builder.create();
+		                    alert.show();
+	            		}
+	            		else
+	            		{
+	            			add_itemtoDB();
+	            		}	
+	            		
+	            	}
+	            	else
+	            	{
+	            		add_itemtoDB();
+	            	}
+				
 	        	}
 	      }
 	    );
@@ -190,6 +329,77 @@ public class additem extends Activity
 	      }
 	    );
 	  }
+	
+    private int query_type_totalm()
+    {
+    	/*
+    	int cost=0;
+    	int endyear = Integer.parseInt(sYear) + 1;
+    	String ystart = sYear + "/01/01";
+    	String yend = sYear + "/12/31";
+
+    	try{
+    		//cursor = db.query(SQLiteHelper.TB_NAME_B, null, Money_item.DATE + " BETWEEN '" +  "" + ystart + "' AND '" + yend + "'", null, null, null, null);
+    		cursor.moveToFirst();
+    		
+        	openOptionsDialog(Money_item.DATE + " BETWEEN '" +  "" + ystart + "' AND '" + yend + "'");
+
+        	//no data
+    		if (cursor.isAfterLast())
+    		{
+    			return 0;
+    		}
+      	
+        	while(!cursor.isAfterLast())
+        	{   
+        		String money = cursor.getString(6);
+        		cost = cost + Integer.parseInt(money);
+         		cursor.moveToNext();
+        	}
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}	            		
+
+    	return cost;
+		*/
+    	return 0;
+    }
+
+	
+    private int query_month_totalm()
+    {
+    	int cost=0;
+    	String ystart = sYear + "/" + sMonth + "/01";
+    	String yend = sYear + "/" + sMonth + "/31";
+
+    	try{
+    		cursor = db.query(SQLiteHelper.TB_NAME, null, Money_item.DATE + " BETWEEN '" +  "" + ystart + "' AND '" + yend + "'", null, null, null, null);
+    		cursor.moveToFirst();
+    		
+        	//no data
+    		if (cursor.isAfterLast())
+    		{
+    			return 0;
+    		}
+      	
+        	while(!cursor.isAfterLast())
+        	{   
+        		String money = cursor.getString(6);
+        		cost = cost + Integer.parseInt(money);
+         		cursor.moveToNext();
+        	}
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}	            		
+
+    	
+    	return cost;
+    }
+
 
     private void updateDisplay() 
     {
@@ -237,6 +447,61 @@ public class additem extends Activity
                     updateDisplay();
                 }
             };	
+            
+    private void add_itemtoDB()
+    {
+    	String amoney = "0";
+    	String where = Account_item.ACCOUNT + "='" + account.getSelectedItem().toString().trim()+ "'";
+    	
+    	//fetch acoount's cost
+    	try{
+    		cursor = db.query(SQLiteHelper.TB_NAME_A, null, where, null, null, null, null);
+    		cursor.moveToFirst();
+    		
+       		amoney = cursor.getString(5);
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}	    	
+    	
+    	int cost_money = Integer.parseInt(amoney) - Integer.parseInt(money.getText().toString().trim());
+		ContentValues avalues = new ContentValues();
+		avalues.put(Account_item.COST, Integer.toString(cost_money));
+
+		//write back to acoount's cost
+    	try{
+			int cityID = db.update(SQLiteHelper.TB_NAME_A, avalues, where, null);
+    	}
+		catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}
+    	
+		//fetch data
+		ContentValues values = new ContentValues();
+		values.put(Money_item.CLASS, ispinner.getSelectedItem().toString().trim());
+		values.put(Money_item.CLASSIFY, classify.getSelectedItem().toString().trim());
+		values.put(Money_item.ITEM, subclass.getText().toString().trim());
+		values.put(Money_item.ACCOUNT, account.getSelectedItem().toString().trim());
+		values.put(Money_item.DATE, date_d.getText().toString().trim());
+		values.put(Money_item.MONEY, money.getText().toString().trim());
+		values.put(Money_item.GUNNO, gunno.getText().toString().trim());
+		
+		//write
+    	try{
+			Long cityID = db.insert(SQLiteHelper.TB_NAME, Money_item.ID, values);
+    	}
+		catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}
+		
+		Toast.makeText(additem.this, "add success.", Toast.LENGTH_LONG).show();            	
+    }
+    
             
     //error message
     private void openOptionsDialog(String info)

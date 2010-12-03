@@ -27,7 +27,7 @@ android:layout_y="100px"
 <ScrollView
 android:id="@+id/scroll"
 android:layout_width="fill_parent"
-android:layout_height="328px"
+android:layout_height="200px"
 android:layout_x="0px"
 android:layout_y="124px"
 >

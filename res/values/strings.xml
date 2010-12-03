@@ -9,7 +9,10 @@
     
     <string name="m_list">帳務管理</string>
     <string name="m_account">帳戶資料</string>
+    <string name="account_m">帳號</string>
+    <string name="account_message">剩餘NT.</string>
     <string name="m_inoutcome">收支紀錄</string>
+    <string name="m_message1">您超支預算了, 請問還要加入嗎?</string>
 
     <string name="c_list">查詢報表</string>
     <string name="c_account">查詢帳戶</string>
@@ -17,6 +20,7 @@
     
     <string name="t_list">工具</string>
     <string name="t_budget">預算管理</string>    
+    <string name="t_account">帳號管理</string>    
     <string name="budget_null">不可為空</string>    
     <string name="budget_notnumber">必須為數字</string>    
     <string name="budget_total">總預算</string>    

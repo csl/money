@@ -38,7 +38,8 @@ public class SQLiteHelper extends SQLiteOpenHelper
 				Account_item.ACCOUNT + " varchar,"+
 				Account_item.CLASSIFY + " varchar,"+
 				Account_item.MONEY + " varchar,"+
-				Account_item.COMMIT + " varchar"+
+				Account_item.COMMIT + " varchar,"+
+				Account_item.COST + " varchar"+
 				");");
 
 		db.execSQL("CREATE TABLE IF NOT EXISTS " +

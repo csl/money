@@ -27,6 +27,9 @@ public class MoneyListView extends ListActivity
 	private String memo_info="";
 	private TextView message;
 	
+	private String acc_mess;
+	private String acc_messa;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,8 +47,11 @@ public class MoneyListView extends ListActivity
     	}
 		
 		message = (TextView) findViewById(R.id.message);
+		
+		acc_mess = (String) this.getResources().getText(R.string.account_m);
+		acc_messa = (String) this.getResources().getText(R.string.account_message);
 
-		String m_list  = (String) this.getResources().getText(R.string.m_list);
+		String m_list = (String) this.getResources().getText(R.string.m_list);
 		String m_account  = (String) this.getResources().getText(R.string.m_account);
 		String m_inoutcome  = (String) this.getResources().getText(R.string.m_inoutcome);
 		
@@ -54,6 +60,7 @@ public class MoneyListView extends ListActivity
 		String c_inoutcome  = (String) this.getResources().getText(R.string.c_inoutcome);
 		
 		String t_list  = (String) this.getResources().getText(R.string.t_list);
+		String t_account  = (String) this.getResources().getText(R.string.t_account);
 		String t_gunno  = (String) this.getResources().getText(R.string.t_gunno);
 		
 		String s_list  = (String) this.getResources().getText(R.string.s_list);
@@ -104,6 +111,11 @@ public class MoneyListView extends ListActivity
 		element.setTitle(t_budget);
 		elements.add(element);
 		
+		//account
+		element = new ContentListElement();
+		element.setTitle(t_account);
+		elements.add(element);
+		
 		//gunno 
 		element = new ContentListElement();
 		element.setTitle(t_gunno);
@@ -128,9 +140,34 @@ public class MoneyListView extends ListActivity
 
 		this.setListAdapter(adapter);
 		
+		query_account_status();
 		updateShow();
 		message.setText(memo_info);
 
+	}
+	
+	private void query_account_status()
+	{
+    	//fetch acoount's cost
+    	try{
+    		cursor = db.query(SQLiteHelper.TB_NAME_A, null, null, null, null, null, null);
+    		cursor.moveToFirst();
+    		//nodata
+    		if (cursor.isAfterLast())
+    		{
+    			return;
+    		}
+        	while(!cursor.isAfterLast())
+        	{   
+        		memo_info = acc_mess + memo_info + cursor.getString(1) + acc_messa + cursor.getString(5) + "\n";
+         		cursor.moveToNext();
+        	}
+    	}catch(IllegalArgumentException e){
+    		e.printStackTrace();
+    		++ DB_VERSION;
+    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+    	}	    	
+		
 	}
 	
 	protected void onListItemClick(ListView l, View v, int position, long id) 
@@ -172,12 +209,20 @@ public class MoneyListView extends ListActivity
 		else if (position == 7)
 		{
 			Intent intent = new Intent();
-			intent.setClass(MoneyListView.this,invoice.class);
+			intent.setClass(MoneyListView.this,ModifyAccount.class);
 	
 			startActivity(intent);
 			MoneyListView.this.finish();
 		}
 		else if (position == 8)
+		{
+			Intent intent = new Intent();
+			intent.setClass(MoneyListView.this,invoice.class);
+	
+			startActivity(intent);
+			MoneyListView.this.finish();
+		}
+		else if (position == 9)
 		{
 			Intent intent = new Intent();
 			intent.setClass(MoneyListView.this,addmemo.class);
@@ -189,7 +234,7 @@ public class MoneyListView extends ListActivity
 	
     private void updateShow() 
     {
-    	memo_info = (String) this.getResources().getText(R.string.memo_title) + "\n";
+    	memo_info = memo_info + (String) this.getResources().getText(R.string.memo_title) + "\n";
     	
 		//get memo information
     	try{

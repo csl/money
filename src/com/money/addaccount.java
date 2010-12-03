@@ -68,6 +68,7 @@ public class addaccount extends Activity
 					values.put(Account_item.CLASSIFY, accclassify.getSelectedItem().toString().trim());
 					values.put(Account_item.MONEY, money.getText().toString().trim());
 					values.put(Account_item.COMMIT, commit.getText().toString().trim());
+					values.put(Account_item.COST, money.getText().toString().trim());
 					
 					//SQL
 					
