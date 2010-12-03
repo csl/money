@@ -332,18 +332,16 @@ public class additem extends Activity
 	
     private int query_type_totalm()
     {
-    	/*
+    	
     	int cost=0;
     	int endyear = Integer.parseInt(sYear) + 1;
     	String ystart = sYear + "/01/01";
     	String yend = sYear + "/12/31";
 
     	try{
-    		//cursor = db.query(SQLiteHelper.TB_NAME_B, null, Money_item.DATE + " BETWEEN '" +  "" + ystart + "' AND '" + yend + "'", null, null, null, null);
+    		cursor = db.query(SQLiteHelper.TB_NAME, null, Money_item.CLASSIFY + "='" + classify.getSelectedItem().toString().trim() + "' AND " +Money_item.DATE + " BETWEEN '" +  "" + ystart + "' AND '" + yend + "'", null, null, null, null);
     		cursor.moveToFirst();
     		
-        	openOptionsDialog(Money_item.DATE + " BETWEEN '" +  "" + ystart + "' AND '" + yend + "'");
-
         	//no data
     		if (cursor.isAfterLast())
     		{
@@ -363,8 +361,6 @@ public class additem extends Activity
     	}	            		
 
     	return cost;
-		*/
-    	return 0;
     }
 
 	

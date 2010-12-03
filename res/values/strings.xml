@@ -9,7 +9,7 @@
     
     <string name="m_list">帳務管理</string>
     <string name="m_account">帳戶資料</string>
-    <string name="account_m">帳號</string>
+    <string name="account_m">帳號: </string>
     <string name="account_message">剩餘NT.</string>
     <string name="m_inoutcome">收支紀錄</string>
     <string name="m_message1">您超支預算了, 請問還要加入嗎?</string>

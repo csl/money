@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -59,39 +61,53 @@ public class ModifyAccount extends Activity
 		
 		account_classify = this.getResources().getStringArray(R.array.accclassify_list);
 
+		query_account();
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, account_classify);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		accclassify.setAdapter(adapter);		
+
 		accname.setOnItemSelectedListener(new Spinner.OnItemSelectedListener(){
 	           public void onItemSelected(AdapterView adapterView, View view, int position, long id)
 	           {
-	   	    	try{
-		    		cursor = db.query(SQLiteHelper.TB_NAME_A, null, Account_item.ACCOUNT + "='" + accname.getSelectedItem().toString().trim() + "'" , null, null, null, null);
-		    		cursor.moveToFirst();
-		    		//nodata
-		    		if (cursor.isAfterLast())
-		    		{
-		    			return;
-		    		}
-		        	while(!cursor.isAfterLast())
-		        	{
-		        		accname.setSelection(1);
-		        		money.setText(cursor.getString(3));;
-		        		commit.setText(cursor.getString(4));
-
-		         		cursor.moveToNext();
-		        	}
-		    	}catch(IllegalArgumentException e){
-		    		e.printStackTrace();
-		    		++ DB_VERSION;
-		    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
-		    	}	    
+	        	   //openOptionsDialog(Account_item.ACCOUNT + "='" + accname.getSelectedItem().toString().trim() + "'");
+	        	   try{
+			    		cursor = db.query(SQLiteHelper.TB_NAME_A, null, Account_item.ACCOUNT + "='" + accname.getSelectedItem().toString().trim() + "'" , null, null, null, null);
+			    		cursor.moveToFirst();
+			    		
+			    		//nodata
+			    		if (cursor.isAfterLast())
+			    		{
+			    			return;
+			    		}
+			        	while(!cursor.isAfterLast())
+			        	{
+			        		//find it
+			        		int len = account_classify.length;
+			        		for (int i=0; i<len; i++)
+			        		{
+			        			if (account_classify[i].equals(cursor.getString(2)))
+			        			{
+			        				accclassify.setSelection(i);
+			        				break;
+			        			}
+			        		}
+			        		money.setText(cursor.getString(3));
+			        		commit.setText(cursor.getString(4));
+	
+			         		cursor.moveToNext();
+			        	}
+			    	}catch(IllegalArgumentException e){
+			    		e.printStackTrace();
+			    		++ DB_VERSION;
+			    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+			    	}	 
+		    	 
 	           }
 	           public void onNothingSelected(AdapterView arg0) 
 	           {
 	           }
 	        });
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, account_classify);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		accclassify.setAdapter(adapter);		
 		
 	    Button accadd=(Button) findViewById(R.id.addacc);
 	    accadd.setOnClickListener(new Button.OnClickListener()
@@ -138,9 +154,25 @@ public class ModifyAccount extends Activity
 	      }
 	    );
 	    
-	    query_account();
 	  }
 
+    //error message
+    private void openOptionsDialog(String info)
+	{
+	    new AlertDialog.Builder(this)
+	    .setTitle("Inquire")
+	    .setMessage(info)
+	    .setPositiveButton("OK",
+	        new DialogInterface.OnClickListener()
+	        {
+	         public void onClick(DialogInterface dialoginterface, int i)
+	         {
+	         }
+	         }
+	        )
+	    .show();
+	}
+	
 	  private int query_account()
       {
 		    List<String> account_c = new ArrayList<String>();
@@ -148,6 +180,7 @@ public class ModifyAccount extends Activity
 	    	try{
 	    		cursor = db.query(SQLiteHelper.TB_NAME_A, null, null, null, null, null, null);
 	    		cursor.moveToFirst();
+	    		
 	    		//nodata
 	    		if (cursor.isAfterLast())
 	    		{
@@ -171,4 +204,6 @@ public class ModifyAccount extends Activity
 	    	
 			return 1;
       }
+	  
+
 }

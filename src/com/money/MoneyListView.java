@@ -159,7 +159,7 @@ public class MoneyListView extends ListActivity
     		}
         	while(!cursor.isAfterLast())
         	{   
-        		memo_info = acc_mess + memo_info + cursor.getString(1) + acc_messa + cursor.getString(5) + "\n";
+        		memo_info = memo_info + cursor.getString(1) + acc_messa + cursor.getString(5) + "\n";
          		cursor.moveToNext();
         	}
     	}catch(IllegalArgumentException e){
