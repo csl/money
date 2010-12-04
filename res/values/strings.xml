@@ -15,6 +15,8 @@
     <string name="m_message1">您超支預算了, 請問還要加入嗎?</string>
 
     <string name="c_list">查詢報表</string>
+    <string name="list_total">總計</string>
+    <string name="list_outcome">支出</string>
     <string name="c_account">查詢帳戶</string>
     <string name="c_inoutcome">查詢帳務</string>
     

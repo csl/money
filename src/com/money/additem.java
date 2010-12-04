@@ -93,7 +93,8 @@ public class additem extends Activity
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, ispinner_list);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		ispinner.setAdapter(adapter);
-
+		ispinner.setSelection(1);
+		
 		//add classify spinner
 		String classify_list[] = this.getResources().getStringArray(R.array.classify_list);
 		adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, classify_list);
@@ -131,8 +132,8 @@ public class additem extends Activity
 	        	public void onClick(View v)
 	        	{
 		     		Intent intent = new Intent();
-		       		intent.setClass(additem.this, calc.class);
-		       		startActivityForResult(intent, EDIT);
+		       	intent.setClass(additem.this, calc.class);
+		       	startActivityForResult(intent, EDIT);
 	        		//startActivity(intent);
 	        	}
 	      }
@@ -162,6 +163,7 @@ public class additem extends Activity
 	        	{
 	        		String mydata = null;
 	        		int nodata=0;
+	        		int type = ispinner.getSelectedItemPosition();
 	        		money_m = "0";
 	        		type_m = "0";
 	        		
@@ -195,8 +197,8 @@ public class additem extends Activity
 	            		//if yes, has two data
 	                	while(!cursor.isAfterLast())
 	                	{
-	                		String type = cursor.getString(2);
-	                		if (type.equals("0"))
+	                		String typeq = cursor.getString(2);
+	                		if (typeq.equals("0"))
 	                		{
 	                			int type_id = classify.getSelectedItemPosition();
 		                		mydata = cursor.getString(3);
@@ -265,15 +267,14 @@ public class additem extends Activity
 	            		if (budget_month != 0)
 	            		{
 	            			cost = query_month_totalm();
-		            		openOptionsDialog(budget_month + " " + cost);
-	            			
+
 	            			//over budget
 	            			if (cost > budget_month) 
 	            				over_budget = 1;
 	            		}
 
 	            		
-	            		if (over_budget == 1)
+	            		if (over_budget == 1 && type == 1)
 	            		{
 		                    builder.setMessage(money_message);
 		                    builder.setCancelable(false);
@@ -448,7 +449,9 @@ public class additem extends Activity
     {
     	String amoney = "0";
     	String where = Account_item.ACCOUNT + "='" + account.getSelectedItem().toString().trim()+ "'";
-    	
+		int typeq = ispinner.getSelectedItemPosition();
+		int cost_money=0;
+   	
     	//fetch acoount's cost
     	try{
     		cursor = db.query(SQLiteHelper.TB_NAME_A, null, where, null, null, null, null);
@@ -459,9 +462,16 @@ public class additem extends Activity
     		e.printStackTrace();
     		++ DB_VERSION;
     		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
-    	}	    	
+    	}
     	
-    	int cost_money = Integer.parseInt(amoney) - Integer.parseInt(money.getText().toString().trim());
+		if (typeq == 1)
+		{
+			cost_money = Integer.parseInt(amoney) - Integer.parseInt(money.getText().toString().trim());
+		}
+		else
+		{
+			cost_money = Integer.parseInt(amoney) + Integer.parseInt(money.getText().toString().trim());			
+		}
 		ContentValues avalues = new ContentValues();
 		avalues.put(Account_item.COST, Integer.toString(cost_money));
 

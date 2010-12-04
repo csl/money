@@ -52,6 +52,10 @@ public class query extends Activity
 	private SQLiteHelper dbHelper;
 	private Cursor cursor;
 	
+	private String list_total;
+	private String list_outcome;
+
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 	    super.onCreate(savedInstanceState);
@@ -67,13 +71,14 @@ public class query extends Activity
     		++ DB_VERSION;
     		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
     	}			        	
+    	
+		list_total  = (String) this.getResources().getText(R.string.list_total);
+		list_outcome  = (String) this.getResources().getText(R.string.list_outcome);
 
     	show_list = (ExpandableListView)findViewById(R.id.queryList);
     	
     	start_date = (TextView)findViewById(R.id.start_date);
     	end_date = (TextView)findViewById(R.id.end_date);
-
-    	adapter = new QueryExpand(this);
 
 	    Button m_start_date=(Button) findViewById(R.id.m_start_date);
 	    m_start_date.setOnClickListener(new Button.OnClickListener()
@@ -100,6 +105,7 @@ public class query extends Activity
 	     {
 	        	public void onClick(View v)
 	        	{
+	            	adapter = new QueryExpand(query.this);
 
 	        		//fetch start date
 	        		String sdate = start_date.getText().toString();
@@ -148,7 +154,7 @@ public class query extends Activity
 			            	{    
 			        			child = new ArrayList<String>();
 			            		child.add(cursor.getString(1) + "/" + cursor.getString(2) + ", NT." + cursor.getString(6));
-			            		smoney = smoney + Integer.parseInt(cursor.getString(7)); 
+			            		smoney = smoney + Integer.parseInt(cursor.getString(6)); 
 			            		//openOptionsDialog(cursor.getString(2) + "/" +cursor.getString(3) + ", NT." + cursor.getString(5));
 			            		cursor.moveToNext();
 			            	}
@@ -178,10 +184,20 @@ public class query extends Activity
 						//openOptionsDialog(term);
 			        }
 			        
-			    	String total[] = {"支出花費: " + smoney};
-			    	adapter.addItem("總和", total);
+			    	String total[] = {list_total + smoney};
+			    	adapter.addItem(list_outcome, total);
+			    	
+			    	try 
+			    	{
+			    		show_list.removeAllViews();
+			    		
+			    	}
+			    	catch (Exception x)
+			    	{
+			    		
+			    	}
 
-			        show_list.setAdapter(adapter);
+			       show_list.setAdapter(adapter);
 	        	}
 	      }
 	    );

@@ -127,7 +127,7 @@ public class MoneyListView extends ListActivity
 		elements.add(element);
 		
 		adapter.addList(elements);
-
+/*
 		//system setup
 		adapter.addSectionHeaderItem(s_list);
 
@@ -137,7 +137,7 @@ public class MoneyListView extends ListActivity
 		element.setTitle(s_setup);
 		elements.add(element);
 		adapter.addList(elements);
-
+*/
 		this.setListAdapter(adapter);
 		
 		query_account_status();
@@ -159,7 +159,7 @@ public class MoneyListView extends ListActivity
     		}
         	while(!cursor.isAfterLast())
         	{   
-        		memo_info = memo_info + cursor.getString(1) + acc_messa + cursor.getString(5) + "\n";
+        		memo_info = memo_info + "[" + cursor.getString(1) + "]" + acc_messa + cursor.getString(5) + "\n";
          		cursor.moveToNext();
         	}
     	}catch(IllegalArgumentException e){
@@ -180,7 +180,7 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,addaccount.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 		else if (position==2)
 		{
@@ -188,7 +188,7 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,additem.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 		else if (position == 4)
 		{
@@ -196,7 +196,7 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,query.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 		else if (position == 6)
 		{
@@ -204,7 +204,7 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,SetBudget.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 		else if (position == 7)
 		{
@@ -212,7 +212,7 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,ModifyAccount.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 		else if (position == 8)
 		{
@@ -220,7 +220,7 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,invoice.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 		else if (position == 9)
 		{
@@ -228,13 +228,13 @@ public class MoneyListView extends ListActivity
 			intent.setClass(MoneyListView.this,addmemo.class);
 	
 			startActivity(intent);
-			MoneyListView.this.finish();
+			//MoneyListView.this.finish();
 		}
 	}
 	
     private void updateShow() 
     {
-    	memo_info = memo_info + (String) this.getResources().getText(R.string.memo_title) + "\n";
+    	memo_info = memo_info + "\n" + (String) this.getResources().getText(R.string.memo_title) + "\n";
     	
 		//get memo information
     	try{
