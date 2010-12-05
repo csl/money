@@ -54,10 +54,12 @@ public class additem extends Activity
     
     private String classify_list[];
     private String money_message;
+    private String money_message_l;
     private int edittextlen;
     private String type_m, money_m;
 
     private AlertDialog.Builder builder;
+    private int nowrite;
 
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -76,6 +78,7 @@ public class additem extends Activity
 
 		classify_list = this.getResources().getStringArray(R.array.classify_list);
 		money_message = (String) this.getResources().getText(R.string.m_message1);
+		money_message_l = (String) this.getResources().getText(R.string.m_message2);
 		edittextlen = classify_list.length;
 		
 		builder = new AlertDialog.Builder(this);
@@ -449,6 +452,7 @@ public class additem extends Activity
     {
     	String amoney = "0";
     	String where = Account_item.ACCOUNT + "='" + account.getSelectedItem().toString().trim()+ "'";
+    	nowrite = 0;
 		int typeq = ispinner.getSelectedItemPosition();
 		int cost_money=0;
    	
@@ -463,7 +467,8 @@ public class additem extends Activity
     		++ DB_VERSION;
     		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
     	}
-    	
+
+    	//income or outcome
 		if (typeq == 1)
 		{
 			cost_money = Integer.parseInt(amoney) - Integer.parseInt(money.getText().toString().trim());
@@ -472,40 +477,68 @@ public class additem extends Activity
 		{
 			cost_money = Integer.parseInt(amoney) + Integer.parseInt(money.getText().toString().trim());			
 		}
-		ContentValues avalues = new ContentValues();
-		avalues.put(Account_item.COST, Integer.toString(cost_money));
-
-		//write back to acoount's cost
-    	try{
-			int cityID = db.update(SQLiteHelper.TB_NAME_A, avalues, where, null);
-    	}
-		catch(IllegalArgumentException e){
-    		e.printStackTrace();
-    		++ DB_VERSION;
-    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
-    	}
-    	
-		//fetch data
-		ContentValues values = new ContentValues();
-		values.put(Money_item.CLASS, ispinner.getSelectedItem().toString().trim());
-		values.put(Money_item.CLASSIFY, classify.getSelectedItem().toString().trim());
-		values.put(Money_item.ITEM, subclass.getText().toString().trim());
-		values.put(Money_item.ACCOUNT, account.getSelectedItem().toString().trim());
-		values.put(Money_item.DATE, date_d.getText().toString().trim());
-		values.put(Money_item.MONEY, money.getText().toString().trim());
-		values.put(Money_item.GUNNO, gunno.getText().toString().trim());
 		
-		//write
-    	try{
-			Long cityID = db.insert(SQLiteHelper.TB_NAME, Money_item.ID, values);
-    	}
-		catch(IllegalArgumentException e){
-    		e.printStackTrace();
-    		++ DB_VERSION;
-    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
-    	}
+		if (cost_money <= 0)
+		{
+            builder.setMessage(money_message_l);
+            builder.setCancelable(false);
+           
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) 
+                {
+                }
+            });
+           
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) 
+                {
+                	nowrite = 1;
+                }
+            });
+            
+            AlertDialog alert = builder.create();
+            alert.show();
+      
+		}
 		
-		Toast.makeText(additem.this, "add success.", Toast.LENGTH_LONG).show();            	
+		
+		if (nowrite == 1)
+		{
+			ContentValues avalues = new ContentValues();
+			avalues.put(Account_item.COST, Integer.toString(cost_money));
+	
+			//write back to acoount's cost
+	    	try{
+				int cityID = db.update(SQLiteHelper.TB_NAME_A, avalues, where, null);
+	    	}
+			catch(IllegalArgumentException e){
+	    		e.printStackTrace();
+	    		++ DB_VERSION;
+	    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+	    	}
+	    	
+			//fetch data
+			ContentValues values = new ContentValues();
+			values.put(Money_item.CLASS, ispinner.getSelectedItem().toString().trim());
+			values.put(Money_item.CLASSIFY, classify.getSelectedItem().toString().trim());
+			values.put(Money_item.ITEM, subclass.getText().toString().trim());
+			values.put(Money_item.ACCOUNT, account.getSelectedItem().toString().trim());
+			values.put(Money_item.DATE, date_d.getText().toString().trim());
+			values.put(Money_item.MONEY, money.getText().toString().trim());
+			values.put(Money_item.GUNNO, gunno.getText().toString().trim());
+			
+			//write
+	    	try{
+				Long cityID = db.insert(SQLiteHelper.TB_NAME, Money_item.ID, values);
+	    	}
+			catch(IllegalArgumentException e){
+	    		e.printStackTrace();
+	    		++ DB_VERSION;
+	    		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
+	    	}
+			
+			Toast.makeText(additem.this, "add success.", Toast.LENGTH_LONG).show();
+		}
     }
     
             

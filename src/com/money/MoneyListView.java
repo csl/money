@@ -32,7 +32,8 @@ public class MoneyListView extends ListActivity
 	
 	/** Called when the activity is first created. */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
@@ -46,6 +47,7 @@ public class MoneyListView extends ListActivity
     		dbHelper.onUpgrade(db, --DB_VERSION, DB_VERSION);
     	}
 		
+		//get message
 		message = (TextView) findViewById(R.id.message);
 		
 		acc_mess = (String) this.getResources().getText(R.string.account_m);
@@ -69,6 +71,7 @@ public class MoneyListView extends ListActivity
 		String cmemo  = (String) this.getResources().getText(R.string.cmemo);
 		String t_budget  = (String) this.getResources().getText(R.string.t_budget);
 
+		//ListView
 		CustomerListAdapter adapter = new CustomerListAdapter(this);
 		ContentListElement element;
 
@@ -234,7 +237,7 @@ public class MoneyListView extends ListActivity
 	
     private void updateShow() 
     {
-    	memo_info = memo_info + "\n" + (String) this.getResources().getText(R.string.memo_title) + "\n";
+    	memo_info = memo_info + "\n" + (String) this.getResources().getText(R.string.memo_title);
     	
 		//get memo information
     	try{
@@ -249,7 +252,7 @@ public class MoneyListView extends ListActivity
         	cursor.moveToFirst();
         	while(!cursor.isAfterLast())
         	{
-        		memo_info = memo_info + cursor.getString(1) + " " + cursor.getString(2) + "\n";
+        		memo_info = memo_info + "\n" + cursor.getString(1) + " " + cursor.getString(2);
         		cursor.moveToNext();
         	}
     	}catch(IllegalArgumentException e){

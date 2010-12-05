@@ -13,6 +13,7 @@
     <string name="account_message">剩餘NT.</string>
     <string name="m_inoutcome">收支紀錄</string>
     <string name="m_message1">您超支預算了, 請問還要加入嗎?</string>
+    <string name="m_message2">若加入您的帳戶就會小於0, 請問還要加入嗎?</string>
 
     <string name="c_list">查詢報表</string>
     <string name="list_total">總計</string>
