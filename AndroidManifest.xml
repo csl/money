@@ -20,5 +20,6 @@
      <activity android:name="addmemo"></activity>>        
      <activity android:name="SetBudget"></activity>>        
      <activity android:name="ModifyAccount"></activity>>        
+     <activity android:name="AccountDel"></activity>>        
     </application>
 </manifest> 

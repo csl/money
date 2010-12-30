@@ -212,7 +212,7 @@ public class MoneyListView extends ListActivity
 		else if (position == 7)
 		{
 			Intent intent = new Intent();
-			intent.setClass(MoneyListView.this,ModifyAccount.class);
+			intent.setClass(MoneyListView.this,AccountDel.class);
 	
 			startActivity(intent);
 			//MoneyListView.this.finish();

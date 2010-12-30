@@ -95,5 +95,10 @@
   	<item>月</item>  
  	</string-array> 
 
+	<string-array name="m_account_l">  
+  	<item>編輯</item>  
+  	<item>刪除</item>  
+ 	</string-array> 
+
   
 </resources>
