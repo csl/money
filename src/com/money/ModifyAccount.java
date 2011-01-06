@@ -147,7 +147,7 @@ public class ModifyAccount extends Activity
 	        		dbHelper.close();
 
 	        		Intent intent = new Intent();
-	        		intent.setClass(ModifyAccount.this, MoneyListView.class);
+	        		intent.setClass(ModifyAccount.this, AccountDel.class);
 
 	        		startActivity(intent);
 	        		ModifyAccount.this.finish();	  
